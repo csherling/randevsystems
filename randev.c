@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -30,15 +30,23 @@ int main(){
 
   int fd = open("foo", O_CREAT | O_RDWR, 0666);
   printf("writing\n\n");
-  write(fd, &rands, 10 * sizeof(int));
-
-  close(fd);
-
+  int e = write(fd, &rands, 10 * sizeof(int));
+  if(e == -1){
+    printf("%s\n", strerror(errno));
+  }
+  e = close(fd);
+  if(e == -1){
+    printf("%s\n", strerror(errno));
+  }
+  
   fd = open("foo", O_RDONLY);
   int readrands[10];
   printf("reading\n\n");
   read(fd, readrands, 10 * sizeof(int));
-  printf("In readrands: \n");
+  e = printf("In readrands: \n");
+  if(e == -1){
+    printf("%s\n", strerror(errno));
+  }
   for (i = 0; i < 10; i++) {
     printf("    random %d: %d \n ", i, readrands[i]);
     if (readrands[i] != rands[i]) {
